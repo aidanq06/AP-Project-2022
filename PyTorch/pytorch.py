@@ -3,17 +3,17 @@ import torchvision
 from torchvision import transforms, datasets
 import torch.nn as nn
 import torch.nn.functional as F
-import matplotlib
+import torch.optim as optim
+import matplotlib.pyplot as plt
 
-train = datasets.MNIST('', train=True, download=True,
-                       transform=transforms.Compose([
-                           transforms.ToTensor()
-                       ]))
+# matplotlib is confusing
+"""
+imports 
+"""
 
-test = datasets.MNIST('', train=False, download=True,
-                       transform=transforms.Compose([
-                           transforms.ToTensor()
-                       ]))
+# Download files (requires internet connection)
+train = datasets.MNIST('', train=True, download=True,transform=transforms.Compose([transforms.ToTensor()]))
+test = datasets.MNIST('', train=False, download=True,transform=transforms.Compose([transforms.ToTensor()]))
 
 
 trainset = torch.utils.data.DataLoader(train, batch_size=10, shuffle=True)
@@ -38,7 +38,6 @@ class Net(nn.Module):
 net = Net()
 print(net) # Prints the neural net layout
 
-import torch.optim as optim
 
 loss_function = nn.CrossEntropyLoss()
 optimizer = optim.Adam(net.parameters(), lr=0.001)
@@ -69,9 +68,6 @@ with torch.no_grad():
 
 print("Accuracy\n ", round(correct/total, 3))
 
-import matplotlib.pyplot as plt
 
-plt.imshow(X[0].view(28,28))
+plt.imshow(X[1].view(28,28))
 plt.show()
-
-print(torch.argmax(net(X[3].vew(-1,28*28))[0])) # Predicts the number
