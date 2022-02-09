@@ -1,0 +1,1 @@
+A program that inputs a hand-written number from the user, then evaluates and outputs the predicted number.
