@@ -38,6 +38,7 @@ class Net(nn.Module):
 net = Net()
 print(net) # Prints the neural net layout
 
+
 loss_function = nn.CrossEntropyLoss()
 optimizer = optim.Adam(net.parameters(), lr=0.001)
 
