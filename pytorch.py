@@ -1,24 +1,10 @@
+import matplotlib.pyplot as plt
 import torch
-import torchvision
 from torchvision import transforms, datasets
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-import random
-
-# matplotlib is confusing
-"""
-imports 
-"""
-
-# Download files (requires internet connection)
-train = datasets.MNIST('', train=True, download=True,transform=transforms.Compose([transforms.ToTensor()]))
-test = datasets.MNIST('', train=False, download=True,transform=transforms.Compose([transforms.ToTensor()]))
-
-
-trainset = torch.utils.data.DataLoader(train, batch_size=10, shuffle=True)
-testset = torch.utils.data.DataLoader(test, batch_size=10, shuffle=False)
-
+from PIL import Image
 
 class Net(nn.Module):
     def __init__(self):
@@ -35,38 +21,39 @@ class Net(nn.Module):
         x = self.fc4(x)
         return F.log_softmax(x, dim=1)
 
-net = Net()
-print(net) # Prints the neural net layout
 
+img = Image.open("resized.png")
+path = "model/training.pt"
 
-loss_function = nn.CrossEntropyLoss()
-optimizer = optim.Adam(net.parameters(), lr=0.001)
+model = Net()
+model.load_state_dict(torch.load(path))
+model.eval()
+# test
 
-for epoch in range(3): # 3 full passes over the data
-    for data in trainset:  # `data` is a batch of data
-        X, y = data  # X is the batch of features, y is the batch of targets.
-        net.zero_grad()  # sets gradients to 0 before loss calc. You will do this likely every step.
-        output = net(X.view(-1,784))  # pass in the reshaped batch (recall they are 28x28 atm)
-        loss = F.nll_loss(output, y)  # calc and grab the loss value
-        loss.backward()  # apply this loss backwards thru the network's parameters
-        optimizer.step()  # attempt to optimize weights to account for loss/gradients
-    print(loss)  # print loss. We hope loss 
-
-correct = 0
-total = 0
+transform = transforms.ToTensor()
+tensor_array = transform(img) # this is a tensor
 
 with torch.no_grad():
+    x = tensor_array
+    output = model(x.view(-1,784))
+    for i in enumerate(output):
+        print(torch.argmax(i[1]),) # Should print out what number it thinks.
+        break
+
+"""
+with torch.no_grad():
     for data in testset:
-        X, y = data
-        output = net(X.view(-1,784))
-        #print(output)
+        print(data)
+        x, y = data
+        print(f"X:{x}\n",f"Y:{y}\n")
+        output = net(x.view(-1,784))
         for idx, i in enumerate(output):
-            #print(torch.argmax(i), y[idx])
+            print(f"IDX:{idx}\n",f"I:{i}\n")
             if torch.argmax(i) == y[idx]:
                 correct += 1
-            total += 1
+            total += 1"""
 
-print(f"Accuracy: {round(correct/total, 3)*100}% (In terms of 0 - 1 value) {round(correct/total, 3)}")
-
+"""print(f"Accuracy: {round(correct/total, 3)*100}% (In terms of 0 - 1 value) {round(correct/total, 3)}")
 plt.imshow(X[random.randint(1,9)].view(28,28))
 plt.show()
+"""

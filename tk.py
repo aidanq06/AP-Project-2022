@@ -5,11 +5,14 @@ from tkinter import ttk
 from PIL import Image
 from pyparsing import White
 
-width, height = 400,400
+width, height = 300,300
 
 
 def save():
     image.save("image.png")
+    img = Image.open("image.png")
+    resized_img = img.resize((28,28))
+    resized_img.save("resized.png")
 
 def draw(arg):
     x,y,x1,y1 = (arg.x-1), (arg.y-1), (arg.x+1), (arg.y+1)
