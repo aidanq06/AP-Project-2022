@@ -7,7 +7,6 @@ from tkinter import *
 from PIL import Image, ImageDraw
 from tkinter import Tk
 from PIL import Image
-
 class Net(nn.Module):
     def __init__(self):
         super().__init__()
@@ -47,6 +46,10 @@ def evaluate():
         x = tensor_array
         output = model(x.view(-1,784))
         for i in enumerate(output):
+            
+            widget = Label(canvas, text=f'Predicted: {torch.argmax(i[1])}', fg='black', bg='white')
+            widget.place(x=5,y=280)
+
             print(torch.argmax(i[1]),) # Should print out what number it thinks.
             break
 
@@ -54,6 +57,7 @@ def draw(arg):
     x,y,x1,y1 = (arg.x-1), (arg.y-1), (arg.x+1), (arg.y+1)
     canvas.create_oval(x,y,x1,y1, fill="white",width=30)
     draw.line([x,y,x1,y1],fill="white",width=30)
+    evaluate()
 
 def clear():
     canvas.delete("all")

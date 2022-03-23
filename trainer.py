@@ -9,8 +9,8 @@ from PIL import Image
 # Download files (requires internet connection)
 train = datasets.MNIST('', train=True, download=True,transform=transforms.Compose([transforms.ToTensor()]))
 test = datasets.MNIST('', train=False, download=True,transform=transforms.Compose([transforms.ToTensor()]))
-trainset = torch.utils.data.DataLoader(train, batch_size=20, shuffle=True)
-testset = torch.utils.data.DataLoader(test, batch_size=20, shuffle=False)
+trainset = torch.utils.data.DataLoader(train, batch_size=100, shuffle=True)
+testset = torch.utils.data.DataLoader(test, batch_size=100, shuffle=False)
 
 path = "model/training.pt"
 
@@ -43,7 +43,7 @@ cout = int()
 class Trainer():
     
     # Changing the range will affect the accuracy of the program.
-    for epoch in range(50): 
+    for epoch in range(100): 
         for data in trainset:  # `data` is a batch of data
             X, y = data  # X is the batch of features, y is the batch of targets.
             net.zero_grad()  # sets gradients to 0 before loss calc. You will do this likely every step.
