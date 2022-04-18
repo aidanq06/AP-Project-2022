@@ -1,13 +1,19 @@
+# Imports
 import torch
 from torchvision import transforms
 import torch.nn as nn
 import torch.nn.functional as F
-from PIL import Image
 from tkinter import *
 from PIL import Image, ImageDraw
-from tkinter import Tk
-from PIL import Image
+
+values = list()
+
+# init of the neural net
+# DON'T INCLUDE TRAINING HERE
+# Training is done with the trainer.py file
 class Net(nn.Module):
+
+    # make sure to include the fact that this was taken from pytorch documentation ###########################
     def __init__(self):
         super().__init__()
         self.fc1 = nn.Linear(28*28, 64)
@@ -15,6 +21,7 @@ class Net(nn.Module):
         self.fc3 = nn.Linear(64, 64)
         self.fc4 = nn.Linear(64, 10)
 
+    # make sure to include the fact that this was taken from pytorch documentation######################################
     def forward(self, x):
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
@@ -22,12 +29,15 @@ class Net(nn.Module):
         x = self.fc4(x)
         return F.log_softmax(x, dim=1)
 
+# Saves the canvas and converts it into 28x28, so it is readable by the program.
 def save():
     image.save("image.png")
     img = Image.open("image.png")
     resized_img = img.resize((28,28))
     resized_img.save("resized.png")
 
+# Takes the 28x28 png file and evaluates it. It imports an existing neural net model that was 
+# created by the 'trainer.py' file
 def evaluate():
     save()
     img = Image.open("resized.png")
@@ -40,7 +50,7 @@ def evaluate():
     # test
 
     transform = transforms.ToTensor()
-    tensor_array = transform(img) # this is a tensor
+    tensor_array = transform(img) # Tensor
 
     with torch.no_grad():
         x = tensor_array
@@ -49,21 +59,58 @@ def evaluate():
             
             widget = Label(canvas, text=f'Predicted: {torch.argmax(i[1])}', fg='black', bg='white')
             widget.place(x=5,y=280)
+            print(torch.argmax(i[1])) # Should print out what number it thinks.
 
-            print(torch.argmax(i[1]),) # Should print out what number it thinks.
+            # Saves a list of all predicted numbers for the "info" function
+            global values
+            values = i[1].tolist()
+            
             break
 
+# Drawing function, also auto-evaluates
 def draw(arg):
     x,y,x1,y1 = (arg.x-1), (arg.y-1), (arg.x+1), (arg.y+1)
     canvas.create_oval(x,y,x1,y1, fill="white",width=30)
     draw.line([x,y,x1,y1],fill="white",width=30)
-    evaluate()
+    evaluate() # Can remove so that it doesn't evaluate for each new pixel drawn
 
+# Draws a (white) black rectangle over the entire canvas, erasing all contents.
 def clear():
     canvas.delete("all")
     draw.rectangle((0,0,500,500),"black")
     save()
 
+# More Info Button
+# Returns extra info on the evaluation. Returns other possibilities.
+def info():
+    fixed = dict()
+    final = dict()
+    # rounds each neuron value
+    for i in range(len(values)):
+        temp = round(values[i],2)
+        values[i] = temp    
+
+    # assigns numeric value to appropriate value
+    # returns a dict {"0.1231" = 1}
+    for i in range(len(values)):
+        ind = values[i]
+        fixed[f"{ind}"] = i
+    
+    # sort the list greatest -> least
+    values.sort(reverse=True)
+    
+
+    for i in values:
+        temp = fixed[f"{i}"]
+
+        final[i]=temp
+
+    #print(final,values)
+    print("Values closest to 0 represent its confidence.\n")
+    for i in final:
+        print(f'"{final[i]}" -> {i}')
+    
+# Declarations of the GUI
 width, height = 300,300
 app = Tk()
 
@@ -75,35 +122,9 @@ canvas.bind("<B1-Motion>", draw)
 image = Image.new("RGB", (width,height), (0,0,0))
 draw = ImageDraw.Draw(image)
 
-button=Button(text="Evaluate",command=evaluate)
+button=Button(text="More Info",command=info)
 button.pack()
 button=Button(text="Clear",command=clear)
 button.pack()
 
-
-app.mainloop()
-
-"""
-with torch.no_grad():
-    for data in testset:
-        print(data)
-        x, y = data
-        print(f"X:{x}\n",f"Y:{y}\n")
-        output = net(x.view(-1,784))
-        for idx, i in enumerate(output):
-            print(f"IDX:{idx}\n",f"I:{i}\n")
-            if torch.argmax(i) == y[idx]:
-                correct += 1
-            total += 1"""
-
-"""print(f"Accuracy: {round(correct/total, 3)*100}% (In terms of 0 - 1 value) {round(correct/total, 3)}")
-plt.imshow(X[random.randint(1,9)].view(28,28))
-plt.show()
-"""
-
-
-
-
-
-
-
+app.mainloop() # Make sure to always include this at end, GUIs cannot function without it.
