@@ -11,18 +11,24 @@ values = list()
 # init of the neural net
 # DON'T INCLUDE TRAINING HERE
 # Training is done with the trainer.py file
-class Net(nn.Module):
 
-    # make sure to include the fact that this was taken from pytorch documentation ###########################
-    def __init__(self):
+class Net(nn.Module):
+    
+    # This code section was taken from:
+    # https://pythonprogramming.net/building-deep-learning-neural-network-pytorch/
+    
+    def __init__(self): # init
         super().__init__()
-        self.fc1 = nn.Linear(28*28, 64)
+        
+        # 4 layers for the neural net
+        self.fc1 = nn.Linear(784, 64)
         self.fc2 = nn.Linear(64, 64)
         self.fc3 = nn.Linear(64, 64)
         self.fc4 = nn.Linear(64, 10)
-
-    # make sure to include the fact that this was taken from pytorch documentation######################################
-    def forward(self, x):
+        # you want the end to provide 10 neurons
+        # each neuron represents a number from 0-10
+        
+    def fwd(self, x):
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         x = F.relu(self.fc3(x))
@@ -63,8 +69,7 @@ def evaluate():
 
             # Saves a list of all predicted numbers for the "info" function
             global values
-            values = i[1].tolist()
-            
+            values = i[1].tolist() # converts tensor to list
             break
 
 # Drawing function, also auto-evaluates
@@ -105,7 +110,7 @@ def info():
 
         final[i]=temp
 
-    #print(final,values)
+    #print(final,values) # debugging purposes
     print("Values closest to 0 represent its confidence.\n")
     for i in final:
         print(f'"{final[i]}" -> {i}')
