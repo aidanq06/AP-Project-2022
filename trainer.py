@@ -6,6 +6,9 @@ import torch.nn.functional as F
 import torch.optim as optim
 from PIL import Image
 
+# A lot of this code was taken from
+# https://pythonprogramming.net/building-deep-learning-neural-network-pytorch/
+
 # Download files (requires internet connection)
 train = datasets.MNIST('', train=True, download=True,transform=transforms.Compose([transforms.ToTensor()]))
 test = datasets.MNIST('', train=False, download=True,transform=transforms.Compose([transforms.ToTensor()]))
@@ -44,13 +47,13 @@ class Trainer():
     
     # Changing the range will affect the accuracy of the program.
     for epoch in range(1000): 
-        for data in trainset:  # `data` is a batch of data
-            X, y = data  # X is the batch of features, y is the batch of targets.
-            net.zero_grad()  # sets gradients to 0 before loss calc. You will do this likely every step.
-            output = net(X.view(-1,784))  # pass in the reshaped batch (recall they are 28x28 atm)
-            loss = F.nll_loss(output, y)  # calc and grab the loss value
-            loss.backward()  # apply this locss backwards thru the network's parameters
-            optimizer.step()  # attempt to optimize weights to account for loss/gradients
+        for data in trainset:
+            X, y = data  # x = batch of features, y = batch of targets.
+            net.zero_grad()
+            output = net(X.view(-1,784))  
+            loss = F.nll_loss(output, y)  
+            loss.backward() 
+            optimizer.step()  
         print(f"{loss} \n Saved! Ran {cout} time(s)")  # more loss is better
         torch.save(net.state_dict(),path)
         cout+=1
