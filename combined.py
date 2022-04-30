@@ -11,24 +11,18 @@ values = list()
 # init of the neural net
 # DON'T INCLUDE TRAINING HERE
 # Training is done with the trainer.py file
-
 class Net(nn.Module):
-    
-    # This code section was taken from:
-    # https://pythonprogramming.net/building-deep-learning-neural-network-pytorch/
-    
-    def __init__(self): # init
+
+    # make sure to include the fact that this was taken from pytorch documentation ###########################
+    def __init__(self):
         super().__init__()
-        
-        # 4 layers for the neural net
-        self.fc1 = nn.Linear(784, 64)
+        self.fc1 = nn.Linear(28*28, 64)
         self.fc2 = nn.Linear(64, 64)
         self.fc3 = nn.Linear(64, 64)
         self.fc4 = nn.Linear(64, 10)
-        # you want the end to provide 10 neurons
-        # each neuron represents a number from 0-10
-        
-    def fwd(self, x):
+
+    # make sure to include the fact that this was taken from pytorch documentation######################################
+    def forward(self, x):
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         x = F.relu(self.fc3(x))
@@ -69,7 +63,8 @@ def evaluate():
 
             # Saves a list of all predicted numbers for the "info" function
             global values
-            values = i[1].tolist() # converts tensor to list
+            values = i[1].tolist()
+            
             break
 
 # Drawing function, also auto-evaluates
@@ -110,10 +105,23 @@ def info():
 
         final[i]=temp
 
-    #print(final,values) # debugging purposes
-    print("Values closest to 0 represent its confidence.\n")
+    #print(final,values)
+    formattedTxt = str()
+    formattedTxt = formattedTxt+"Values closest to 0 represent its confidence.\n"
+
     for i in final:
-        print(f'"{final[i]}" -> {i}')
+        # symbol fix
+        if i == 0:
+            formattedTxt = formattedTxt+f'\n"{final[i]}" -> {i}'
+        else:
+            formattedTxt = formattedTxt+f'\n"{final[i]}" -> ±{i*-1}'
+
+    # Creates a new window that displays the new values
+    newWindow = Toplevel(app)
+    newWindow.title("More info")
+    newWindow.geometry("250x200")
+    Label(newWindow,text =f"{formattedTxt}").pack()
+    
     
 # Declarations of the GUI
 width, height = 300,300
@@ -127,9 +135,7 @@ canvas.bind("<B1-Motion>", draw)
 image = Image.new("RGB", (width,height), (0,0,0))
 draw = ImageDraw.Draw(image)
 
-button=Button(text="More Info",command=info)
-button.pack()
-button=Button(text="Clear",command=clear)
-button.pack()
+button=Button(text="More Info",command=info).pack()
+button=Button(text="Clear",command=clear).pack()
 
 app.mainloop() # Make sure to always include this at end, GUIs cannot function without it.
